@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover and purchase premium photography from top creators. Sell your photos and photography services on Bytelens.">
+    <title>Bytelens | Premium Photography Marketplace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors duration-300 antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav
+        class="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
+        <div
+            class="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent cursor-pointer">
+            Bytelens.
+        </div>
+        <div class="flex items-center gap-4 sm:gap-6">
+            <button class="text-xl" id="themeToggle" aria-label="Toggle Theme">☀️</button>
+            <button
+                class="px-5 py-2 rounded-full font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 hover:-translate-y-0.5 transition-all duration-200 shadow-md"
+                id="btnOfferService">Offer Service</button>
+            <button
+                class="px-5 py-2 rounded-full font-semibold border border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200 hidden sm:block"
+                id="btnUpload">Upload Photo</button>
+
+            <!-- Vault Nav Button (hidden until login) -->
+            <button id="vaultNavBtn" class="hidden relative text-xl hover:scale-110 transition-transform" aria-label="My Vault">🖼️
+                <span id="vaultBadge" class="hidden absolute -top-1 -right-1 min-w-[18px] h-[18px] bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1">0</span>
+            </button>
+
+            <!-- Chat Nav Button -->
+            <button id="chatNavBtn" class="relative text-xl hover:scale-110 transition-transform" aria-label="Messages">💬
+                <span id="chatBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-badgePulse">0</span>
+            </button>
+
+            <!-- Auth Buttons -->
+            <div class="flex items-center gap-2" id="authButtons">
+                <button id="btnSignUp"
+                    class="px-4 py-2 rounded-full font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">Sign
+                    Up</button>
+                <button id="btnLogin"
+                    class="px-5 py-2 rounded-full font-semibold bg-blue-500 text-white hover:bg-blue-600 hover:-translate-y-0.5 transition-all duration-200 shadow-md">Log
+                    In</button>
+            </div>
+
+            <!-- User Profile (Hidden initially) -->
+            <div class="hidden items-center gap-3" id="userProfile">
+                <div class="avatar-btn w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold shadow-md cursor-pointer hover:scale-110 transition-transform">U</div>
+                <button id="btnLogout"
+                    class="text-sm font-semibold text-slate-500 hover:text-red-500 transition-colors hidden sm:block">Log Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="text-center py-24 px-4 max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">Discover Premium Photography</h1>
+        <p class="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            Explore high-quality, exclusive shots from top creators safely. Click to view watermark, buy to get the
+            original.
+        </p>
+    </section>
+
+    <!-- Gallery Grid -->
+    <main class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-6 pb-24 max-w-7xl mx-auto"
+        id="galleryGrid">
+        <!-- Photo Cards Injected via JS -->
+    </main>
+
+    <!-- Photo Detail Modal (Watermarked View) -->
+    <div class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="photoModal">
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-5xl w-full shadow-2xl transition-transform duration-300 transform scale-100 max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closePhotoModal">&times;</button>
+
+            <div class="relative w-full rounded-xl overflow-hidden bg-black flex justify-center items-center h-[60vh]">
+                <!-- Watermark Overlay -->
+                <div class="absolute inset-0 flex flex-col justify-center items-center pointer-events-none overflow-hidden"
+                    id="photoWatermark">
+                    <!-- Repeated text generated in JS -->
+                </div>
+                <!-- Image -->
+                <img src="" id="photoDetailImg" alt="Detail View" class="max-w-full max-h-full object-contain">
+            </div>
+
+            <div class="mt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold" id="photoTitle">Photo Title</h3>
+                    <p class="text-slate-500 dark:text-slate-400">by <span
+                            class="font-semibold text-slate-700 dark:text-slate-300" id="photoAuthor">@author</span></p>
+                </div>
+                <div class="text-left sm:text-right">
+                    <div class="text-2xl font-bold text-blue-500 mb-2" id="photoPrice">Rp 0</div>
+                    <button
+                        class="px-6 py-3 rounded-full font-semibold bg-blue-500 text-white hover:bg-blue-600 transition-colors shadow-md w-full sm:w-auto">Purchase
+                        Original</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="uploadModal">
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-2xl w-full shadow-2xl transition-transform duration-300 transform scale-100">
+            <button
+                class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closeUploadModal">&times;</button>
+
+            <h2 class="text-3xl font-bold mb-2">Upload Photos</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8">Sell your photos securely on Bytelens.</p>
+
+            <div class="flex gap-4 border-b border-slate-200 dark:border-slate-700 mb-6">
+                <button
+                    class="upload-tab pb-2 font-semibold border-b-2 border-blue-500 text-slate-900 dark:text-white opacity-100 transition-colors"
+                    data-target="single">Single Photo</button>
+                <button
+                    class="upload-tab pb-2 font-semibold border-b-2 border-transparent text-slate-900 dark:text-white opacity-50 transition-colors"
+                    data-target="batch">Batch / Bundle</button>
+            </div>
+
+            <div
+                class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-12 text-center mb-6 hover:bg-blue-50 dark:hover:bg-slate-700/50 hover:border-blue-500 transition-all cursor-pointer">
+                <div class="text-4xl mb-3">📁</div>
+                <p class="font-medium">Drag and drop your photos here, or click to browse</p>
+                <p class="text-sm text-slate-400 mt-2">Supports High-Res JPG, PNG (Max 50MB)</p>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">Title <span id="batchTitleHint"
+                        class="hidden font-normal text-slate-500">(For the bundle)</span></label>
+                <input type="text"
+                    class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="E.g. Neon City Nights">
+            </div>
+
+            <div class="mb-8">
+                <label class="block font-semibold mb-2">Set Pricing (Rp)</label>
+                <input type="number"
+                    class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="150000" min="1000">
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <button
+                    class="px-6 py-2 rounded-full font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 transition-colors"
+                    id="closeUploadBtn">Cancel</button>
+                <button
+                    class="px-6 py-2 rounded-full font-semibold bg-blue-500 text-white hover:bg-blue-600 shadow-md transition-colors">Upload
+                    & Publish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Upload Modal -->
+    <div class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="serviceUploadModal">
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-2xl w-full shadow-2xl transition-transform duration-300 transform scale-100">
+            <button
+                class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closeServiceModal">&times;</button>
+
+            <h2 class="text-3xl font-bold mb-2">Offer Your Service</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8">Sell your photography or videography service on Bytelens.</p>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">Service Type</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <button class="service-type-tab py-3 font-semibold rounded-xl border-2 border-purple-500 bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 transition-all duration-200" data-type="photography">Photography</button>
+                    <button class="service-type-tab py-3 font-semibold rounded-xl border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-500 dark:text-slate-400 transition-all duration-200" data-type="videography">Videography</button>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">Service Title</label>
+                <input type="text"
+                    class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder="E.g. Pre-Wedding Photography Package">
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2">Portfolio Link (Optional)</label>
+                <input type="url"
+                    class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder="https://instagram.com/yourportfolio">
+            </div>
+
+            <div class="mb-8">
+                <label class="block font-semibold mb-2">Starting Price (Rp)</label>
+                <input type="number"
+                    class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-purple-500 transition-colors"
+                    placeholder="500000" min="1000">
+            </div>
+
+            <div class="flex justify-end gap-4">
+                <button
+                    class="px-6 py-2 rounded-full font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 transition-colors"
+                    id="closeServiceBtn">Cancel</button>
+                <button
+                    class="px-6 py-2 rounded-full font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 shadow-md transition-all">Publish Service</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Required Modal -->
+    <div class="fixed inset-0 z-[110] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="loginWarningModal">
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl transition-transform duration-300 transform scale-100 text-center">
+
+            <div
+                class="w-20 h-20 bg-blue-50 dark:bg-slate-700/50 rounded-full flex items-center justify-center mx-auto mb-5 text-4xl">
+                🔒
+            </div>
+
+            <h2 class="text-2xl font-bold mb-3">Sign In Required</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8">Harap masuk atau buat akun terlebih dahulu untuk mengakses fitur ini.</p>
+
+            <div class="flex flex-col gap-3">
+                <button
+                    class="w-full px-6 py-3 rounded-full font-semibold bg-blue-500 text-white hover:bg-blue-600 shadow-md transition-colors"
+                    id="btnSignInFromWarning">Sign In Now</button>
+                <button
+                    class="w-full px-6 py-3 rounded-full font-semibold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800"
+                    id="closeWarningBtn">Nanti Saja</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="fixed inset-0 z-[120] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="authModal">
+        <div
+            class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl transition-transform duration-300 transform scale-100">
+            <button
+                class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closeAuthModal">&times;</button>
+            
+            <h2 class="text-3xl font-bold mb-2 text-center" id="authTitle">Welcome Back</h2>
+            <p class="text-slate-500 dark:text-slate-400 mb-8 text-center" id="authSubtitle">Please enter your details to log in.</p>
+
+            <form id="authForm" class="flex flex-col gap-5">
+                <div id="nameFieldGroup" class="hidden">
+                    <label class="block font-semibold mb-2">Full Name</label>
+                    <input type="text" id="authName"
+                        class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="e.g. John Doe">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2">Email Address</label>
+                    <input type="email" id="authEmail" required
+                        class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="you@example.com">
+                </div>
+                <div>
+                    <label class="block font-semibold mb-2">Password</label>
+                    <input type="password" id="authPassword" required
+                        class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors"
+                        placeholder="••••••••">
+                </div>
+                <button type="submit"
+                    class="w-full px-6 py-3 mt-4 rounded-full font-bold bg-blue-500 text-white hover:bg-blue-600 shadow-md transition-colors"
+                    id="btnSubmitAuth">Log In</button>
+            </form>
+            
+            <div class="mt-6 text-center text-slate-500 dark:text-slate-400 mt-8">
+                <span id="authToggleText">Don't have an account?</span> 
+                <button type="button" class="font-bold text-blue-500 hover:text-blue-600 hover:underline ml-1" id="toggleAuthMode">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="profileModal">
+        <div class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-lg w-full shadow-2xl animate-scaleIn max-h-[90vh] overflow-y-auto chat-scrollbar">
+            <button class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closeProfileModal">&times;</button>
+
+            <!-- Edit Button (top right, own profile only) -->
+            <button id="profileEditBtn" class="hidden absolute top-5 right-16 px-3 py-1.5 rounded-full text-xs font-semibold border border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-500 transition-colors">
+                ✏️ Edit
+            </button>
+
+            <!-- Avatar -->
+            <div class="flex flex-col items-center mt-4">
+                <div id="profileAvatar" class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold shadow-lg">U</div>
+                <h3 id="profileName" class="text-xl font-bold mt-4">User Name</h3>
+            </div>
+
+            <!-- View Mode -->
+            <div id="profileViewMode">
+                <!-- Bio -->
+                <div class="mt-6 px-1">
+                    <div class="bg-slate-50 dark:bg-slate-700/50 rounded-2xl p-4">
+                        <p id="profileBioText" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">No bio yet.</p>
+                    </div>
+                </div>
+
+                <!-- Chat Button (other's profile only) -->
+                <div class="mt-4 flex justify-center">
+                    <button id="profileChatBtn" class="hidden px-6 py-2.5 rounded-full font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 shadow-md hover:-translate-y-0.5 transition-all text-sm">
+                        💬 Chat with Seller
+                    </button>
+                </div>
+
+                <!-- Social Links -->
+                <div class="mt-6 px-1">
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">🔗 Social Links</p>
+                    <div id="profileSocialLinks" class="flex flex-col gap-2"></div>
+                </div>
+
+                <!-- Mini Photo Grid -->
+                <div class="mt-6 px-1">
+                    <p class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">📸 Photos</p>
+                    <div id="profilePhotoGrid" class="grid grid-cols-3 gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Edit Form (hidden by default) -->
+            <div id="profileEditForm" class="hidden mt-6">
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-1.5">Bio</label>
+                        <textarea id="editBio" rows="3" class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm resize-none" placeholder="Tell the world about yourself..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1.5">Instagram URL</label>
+                        <input id="editInstagram" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="https://instagram.com/username">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1.5">X (Twitter) URL</label>
+                        <input id="editTwitter" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="https://x.com/username">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1.5">Website / Portfolio</label>
+                        <input id="editWebsite" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="https://yourwebsite.com">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-1.5">GitHub</label>
+                        <input id="editGithub" type="url" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="https://github.com/username">
+                    </div>
+                    <div class="flex justify-end gap-3 mt-2">
+                        <button id="cancelEditBtn" class="px-5 py-2 rounded-full font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 transition-colors text-sm">Cancel</button>
+                        <button id="saveEditBtn" class="px-5 py-2 rounded-full font-semibold bg-blue-500 text-white hover:bg-blue-600 shadow-md transition-colors text-sm">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Overlay -->
+    <div id="chatOverlay" class="fixed inset-0 z-[130] hidden bg-slate-900/40 transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Chat Panel (Slide-in Sidebar) -->
+    <div id="chatPanel" class="fixed top-0 right-0 z-[140] hidden w-full max-w-md h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col border-l border-slate-200 dark:border-slate-700">
+
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <button id="chatBackBtn" class="hidden w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <h3 class="font-bold text-lg" id="chatHeaderTitle">💬 Messages</h3>
+                <span id="chatRecipientName" class="hidden font-bold text-lg"></span>
+            </div>
+            <button id="closeChatBtn" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center transition-colors text-xl">&times;</button>
+        </div>
+
+        <!-- Chat List View -->
+        <div id="chatListView" class="flex-1 overflow-y-auto chat-scrollbar">
+            <div id="chatConversationList" class="p-3"></div>
+        </div>
+
+        <!-- Chat Window View -->
+        <div id="chatWindowView" class="hidden flex-1 flex flex-col">
+            <div id="chatMessages" class="flex-1 overflow-y-auto chat-scrollbar p-4 flex flex-col gap-3"></div>
+
+            <!-- Chat Input -->
+            <div class="p-4 border-t border-slate-200 dark:border-slate-700">
+                <div class="flex items-center gap-2">
+                    <input id="chatInput" type="text" class="flex-1 px-4 py-2.5 rounded-full border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="Type a message...">
+                    <button id="chatSendBtn" class="w-10 h-10 rounded-full bg-blue-500 text-white hover:bg-blue-600 flex items-center justify-center shadow-md transition-colors flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vault Overlay -->
+    <div id="vaultOverlay" class="fixed inset-0 z-[130] hidden bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+
+    <!-- Vault Panel (Full-page Slide-in from Left) -->
+    <div id="vaultPanel" class="fixed top-0 left-0 z-[140] hidden w-full max-w-2xl h-full bg-white dark:bg-slate-800 shadow-2xl flex flex-col border-r border-slate-200 dark:border-slate-700">
+
+        <!-- Vault Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🖼️</span>
+                <h3 class="font-bold text-lg">My Vault</h3>
+                <span id="vaultCounter" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">0 photos</span>
+            </div>
+            <button id="closeVaultBtn" class="w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center justify-center transition-colors text-xl">&times;</button>
+        </div>
+
+        <!-- Vault Toolbar -->
+        <div class="px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex flex-col gap-3 flex-shrink-0">
+            <!-- Search + Actions Row -->
+            <div class="flex items-center gap-3">
+                <div class="flex-1 relative">
+                    <input id="vaultSearchInput" type="text" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-blue-500 transition-colors text-sm" placeholder="Search photos...">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </div>
+                <button id="vaultUploadBtn" class="px-4 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 shadow-md hover:-translate-y-0.5 transition-all text-sm flex items-center gap-2 flex-shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Upload
+                </button>
+            </div>
+            <!-- Select Mode Row -->
+            <div class="flex items-center justify-between">
+                <button id="vaultSelectModeBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 dark:border-slate-600 hover:border-blue-500 hover:text-blue-500 transition-colors flex items-center gap-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Select
+                </button>
+                <div id="vaultSelectActions" class="hidden flex items-center gap-2">
+                    <span id="vaultSelectedCount" class="text-xs font-semibold text-slate-500 dark:text-slate-400">0 selected</span>
+                    <button id="vaultSellSelectedBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-sm transition-all flex items-center gap-1">
+                        💰 Sell Selected
+                    </button>
+                    <button id="vaultDeleteSelectedBtn" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors flex items-center gap-1">
+                        🗑️ Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Progress Area (hidden by default) -->
+        <div id="vaultUploadArea" class="hidden px-6 py-3 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-semibold text-slate-600 dark:text-slate-300" id="vaultUploadStatus">Uploading...</span>
+                <span class="text-xs font-mono text-slate-400" id="vaultUploadPercent">0%</span>
+            </div>
+            <div class="vault-upload-progress">
+                <div class="vault-upload-progress-bar" id="vaultUploadBar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Vault Gallery Grid -->
+        <div class="flex-1 overflow-y-auto vault-scrollbar p-6">
+            <div id="vaultGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <!-- Photos rendered by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="vaultEmptyState" class="hidden flex flex-col items-center justify-center h-full text-center py-16">
+                <div class="vault-empty-icon text-7xl mb-6">📷</div>
+                <h3 class="text-xl font-bold mb-2">Your Vault is Empty</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs mb-6">Upload your photos here to keep them safe. When you're ready, select photos to sell on the marketplace.</p>
+                <button id="vaultEmptyUploadBtn" class="px-6 py-3 rounded-full font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Upload Your First Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vault Sell Modal -->
+    <div class="fixed inset-0 z-[150] hidden items-center justify-center bg-slate-900/60 transition-opacity duration-300 opacity-0 backdrop-blur-sm p-4"
+        id="vaultSellModal">
+        <div class="relative bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl animate-scaleIn">
+            <button class="absolute top-4 right-6 text-3xl text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors"
+                id="closeVaultSellModal">&times;</button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">💰</div>
+                <h2 class="text-2xl font-bold">Sell Photos</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1" id="vaultSellCount">1 photo selected</p>
+            </div>
+
+            <!-- Preview Thumbnails -->
+            <div id="vaultSellPreview" class="flex gap-2 overflow-x-auto pb-3 mb-4 vault-scrollbar">
+                <!-- Thumbnails injected by JS -->
+            </div>
+
+            <div class="mb-4">
+                <label class="block font-semibold mb-2 text-sm">Title (for marketplace listing)</label>
+                <input type="text" id="vaultSellTitle"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-green-500 transition-colors text-sm"
+                    placeholder="E.g. Golden Hour Collection">
+            </div>
+
+            <div class="mb-6">
+                <label class="block font-semibold mb-2 text-sm">Set Price (Rp) <span class="font-normal text-slate-400">per photo</span></label>
+                <input type="number" id="vaultSellPrice"
+                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-transparent focus:outline-none focus:border-green-500 transition-colors text-sm"
+                    placeholder="150000" min="1000">
+            </div>
+
+            <div class="flex justify-end gap-3">
+                <button class="px-5 py-2.5 rounded-full font-semibold border border-slate-300 dark:border-slate-600 hover:border-slate-400 transition-colors text-sm"
+                    id="cancelVaultSellBtn">Cancel</button>
+                <button class="px-5 py-2.5 rounded-full font-bold bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600 shadow-md transition-all text-sm flex items-center gap-2"
+                    id="confirmVaultSellBtn">
+                    🚀 Publish & Sell
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vault Hidden File Input -->
+    <input type="file" id="vaultFileInput" accept="image/jpeg,image/png,image/webp" multiple class="hidden">
+
+    <!-- Footer -->
+    <footer
+        class="py-10 text-center border-t border-slate-200 dark:border-slate-800 mt-12 bg-white/50 dark:bg-slate-900/50">
+        <div class="max-w-4xl mx-auto px-4">
+            <p class="text-slate-500 dark:text-slate-400">&copy; 2026 Bytelens. All rights reserved.</p>
+            <p class="mt-2 text-sm text-slate-400 dark:text-slate-500">
+                Created by: <a href="#" class="font-bold text-blue-500 hover:text-blue-600 transition-colors">Captureʒ
+                    | Find us on @Bytelens</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/gallery.js"></script>
+    <script src="js/upload.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/chat.js"></script>
+    <script src="js/myvault.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
