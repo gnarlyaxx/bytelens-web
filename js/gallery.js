@@ -77,6 +77,7 @@
 
     // --- Photo Detail Modal ---
     function openPhotoModal(photo) {
+        currentPhoto = photo;
         const imgSrc = photo.vault_url || `assets/images/${photo.filename}`;
         photoDetailImg.src = imgSrc;
         photoDetailImg.onerror = function () {
@@ -111,6 +112,7 @@
     closePhotoModalBtn.addEventListener('click', closePhotoModal);
 
     // --- Purchase Button ---
+    let currentPhoto = null; // Track which photo is open
     const purchaseBtn = photoModal?.querySelector('.bg-blue-500');
     if (purchaseBtn) {
         purchaseBtn.addEventListener('click', () => {
@@ -119,7 +121,9 @@
                 window.ByteLens.openLoginWarning();
                 return;
             }
-            showToast('Purchase feature coming soon! Stay tuned. 🛒', 'info');
+            if (currentPhoto && window.ByteLens.purchasePhoto) {
+                window.ByteLens.purchasePhoto(currentPhoto);
+            }
         });
     }
 

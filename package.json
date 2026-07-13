@@ -1,0 +1,33 @@
+{
+  "name": "bytelens-web",
+  "version": "1.0.0",
+  "description": "ByteLens — Premium Photography Marketplace",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "deploy-commands": "node src/bot/deploy-commands.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gnarlyaxx/bytelens-web.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/gnarlyaxx/bytelens-web/issues"
+  },
+  "homepage": "https://github.com/gnarlyaxx/bytelens-web#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.3",
+    "cors": "^2.8.6",
+    "discord.js": "^14.26.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "midtrans-client": "^1.4.3",
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.60.0"
+  }
+}

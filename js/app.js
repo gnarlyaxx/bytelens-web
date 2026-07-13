@@ -15,6 +15,7 @@
         const authModal = document.getElementById('authModal');
         const profileModal = document.getElementById('profileModal');
         const vaultSellModal = document.getElementById('vaultSellModal');
+        const welcomeModal = document.getElementById('welcomeModal');
 
         if (e.target === photoModal && BL.closePhotoModal) BL.closePhotoModal();
         if (e.target === uploadModal && BL.closeUploadModal) BL.closeUploadModal();
@@ -23,6 +24,7 @@
         if (e.target === authModal && BL.closeAuth) BL.closeAuth();
         if (e.target === profileModal && BL.closeProfile) BL.closeProfile();
         if (e.target === vaultSellModal && BL.closeSellModal) BL.closeSellModal();
+        if (e.target === welcomeModal) closeWelcomeModal();
     });
 
     // --- Close modals on ESC key ---
@@ -53,13 +55,46 @@
             BL.closeUploadModal();
         } else if (!document.getElementById('serviceUploadModal').classList.contains('hidden') && BL.closeServiceModal) {
             BL.closeServiceModal();
+        } else if (document.getElementById('welcomeModal') && !document.getElementById('welcomeModal').classList.contains('hidden')) {
+            closeWelcomeModal();
         }
     });
+
+    // --- Welcome Modal Logic ---
+    function closeWelcomeModal() {
+        const welcomeModal = document.getElementById('welcomeModal');
+        if (welcomeModal) {
+            welcomeModal.classList.add('opacity-0');
+            setTimeout(() => {
+                welcomeModal.classList.add('hidden');
+                welcomeModal.classList.remove('flex');
+            }, 300);
+            sessionStorage.setItem('welcomeShown', 'true');
+        }
+    }
+
+    const closeWelcomeBtn = document.getElementById('closeWelcomeBtn');
+    if (closeWelcomeBtn) {
+        closeWelcomeBtn.addEventListener('click', closeWelcomeModal);
+    }
 
     // --- Initialize App ---
     window.addEventListener('DOMContentLoaded', () => {
         const BL = window.ByteLens;
         if (BL.initGallery) BL.initGallery();
         if (BL.checkExistingSession) BL.checkExistingSession();
+        if (BL.initPayment) BL.initPayment();
+
+        // Show Welcome Modal on first visit per session
+        if (!sessionStorage.getItem('welcomeShown')) {
+            const welcomeModal = document.getElementById('welcomeModal');
+            if (welcomeModal) {
+                welcomeModal.classList.remove('hidden');
+                welcomeModal.classList.add('flex');
+                // Trigger reflow for transition
+                void welcomeModal.offsetWidth;
+                welcomeModal.classList.remove('opacity-0');
+            }
+        }
     });
 })();
