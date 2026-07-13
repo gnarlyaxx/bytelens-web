@@ -41,9 +41,18 @@ module.exports = {
         const username = author?.username || 'Unknown User';
         const userId = author?.id || 'Unknown ID';
         
-        const content = message.content || '*[Content unavailable or media-only]*';
+        let content = message.content || '*[Content unavailable or media-only]*';
+        if (content.length > 1500) content = content.substring(0, 1500) + '... [TRUNCATED]';
 
-        const reportMsg = `\`\`\`diff\n- 🗑️ MESSAGE DELETED\n👤 User    : ${username}\n💬 Channel : ${message.channel.name}\n\n[DELETED CONTENT]:\n${content}\n\`\`\`\n🔍 **Profile Check:** <@${userId}>`;
+        const reportMsg = `\`\`\`diff
+- 🗑️ MESSAGE DELETED
+👤 User    : ${username}
+💬 Channel : ${message.channel.name}
+
+[DELETED CONTENT]:
+${content}
+\`\`\`
+🔍 **Profile Check:** <@${userId}>`;
 
         try {
             await adminChannel.send({ 

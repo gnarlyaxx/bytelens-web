@@ -41,10 +41,25 @@ module.exports = {
         const username = author?.username || 'Unknown User';
         const userId = author?.id || 'Unknown ID';
         
-        const oldContent = oldMessage.content || '*[Previous content not cached]*';
-        const newContent = newMessage.content || '*[Content cleared]*';
+        let oldContent = oldMessage.content || '*[Previous content not cached]*';
+        let newContent = newMessage.content || '*[Content cleared]*';
+        
+        if (oldContent.length > 800) oldContent = oldContent.substring(0, 800) + '... [TRUNCATED]';
+        if (newContent.length > 800) newContent = newContent.substring(0, 800) + '... [TRUNCATED]';
 
-        const reportMsg = `\`\`\`fix\n✏️ MESSAGE EDITED\n👤 User    : ${username}\n💬 Channel : ${newMessage.channel.name}\n🔗 Link    : ${newMessage.url}\n\n[BEFORE]:\n${oldContent}\n\n[AFTER]:\n${newContent}\n\`\`\`\n🔍 **Profile Check:** <@${userId}>`;
+        const reportMsg = `\`\`\`fix
+✏️ MESSAGE EDITED
+👤 User    : ${username}
+💬 Channel : ${newMessage.channel.name}
+🔗 Link    : ${newMessage.url}
+
+[BEFORE]:
+${oldContent}
+
+[AFTER]:
+${newContent}
+\`\`\`
+🔍 **Profile Check:** <@${userId}>`;
 
         try {
             await adminChannel.send({ 
